@@ -28,6 +28,7 @@ LIBRARIES += AC_PosControl
 LIBRARIES += RC_Channel
 LIBRARIES += AP_Motors
 LIBRARIES += AP_RangeFinder
+LIBRARIES += AP_DirectionFinder
 LIBRARIES += AP_OpticalFlow
 LIBRARIES += AP_RSSI
 LIBRARIES += Filter

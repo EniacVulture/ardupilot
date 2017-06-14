@@ -59,6 +59,7 @@
 #include <RC_Channel/RC_Channel.h>         // RC Channel Library
 #include <AP_Motors/AP_Motors.h>          // AP Motors library
 #include <AP_RangeFinder/AP_RangeFinder.h>     // Range finder library
+#include <AP_DirectionFinder/AP_DirectionFinder.h> //Direction finder library
 #include <AP_Proximity/AP_Proximity.h>
 #include <AP_OpticalFlow/AP_OpticalFlow.h>     // Optical Flow library
 #include <AP_RSSI/AP_RSSI.h>                   // RSSI Library
@@ -197,6 +198,8 @@ private:
     } rangefinder_state = { false, false, 0, 0 };
 
     AP_RPM rpm_sensor;
+
+    DirectionFinder directionfinder {serial_manager};
 
     // Inertial Navigation EKF
     NavEKF EKF{&ahrs, barometer, rangefinder};
@@ -1025,6 +1028,8 @@ private:
     void init_rangefinder(void);
     void read_rangefinder(void);
     bool rangefinder_alt_ok();
+    void init_directionfinder(void);
+    void read_directionfinder(void);
     void init_compass();
     void init_optflow();
     void update_optical_flow(void);

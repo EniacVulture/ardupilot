@@ -79,6 +79,24 @@ bool Copter::rangefinder_alt_ok()
     return (rangefinder_state.enabled && rangefinder_state.alt_healthy);
 }
 
+void Copter::init_directionfinder()
+{
+#if DIRECTIONFINDER_ENABLED == ENABLED
+	directionfinder.init();
+#endif
+}
+
+void Copter::read_directionfinder()
+{
+#if DIRECTIONFINDER_ENABLED == ENABLED
+	directionfinder.update();
+
+	if(directionfinder.num_sensors() > 0 && should_log(MASK_LOG_CTUN)){
+		//TODO: DataFlash.Log_Write_DFND(directionfinder);
+	}
+#endif
+}
+
 /*
   update RPM sensors
  */

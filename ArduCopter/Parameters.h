@@ -122,7 +122,8 @@ public:
         k_param_serial1_baud,           // deprecated - remove
         k_param_serial2_baud,           // deprecated - remove
         k_param_land_repositioning,
-        k_param_rangefinder, // rangefinder object
+        k_param_rangefinder, 			// rangefinder object
+		k_param_directionfinder, 		// directionfinder object
         k_param_fs_ekf_thresh,
         k_param_terrain,
         k_param_acro_rp_expo,

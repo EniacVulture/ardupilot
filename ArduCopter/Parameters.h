@@ -123,7 +123,6 @@ public:
         k_param_serial2_baud,           // deprecated - remove
         k_param_land_repositioning,
         k_param_rangefinder, 			// rangefinder object
-		k_param_directionfinder, 		// directionfinder object
         k_param_fs_ekf_thresh,
         k_param_terrain,
         k_param_acro_rp_expo,
@@ -187,7 +186,7 @@ public:
 
         // 97: RSSI
         k_param_rssi = 97,
-                
+
         //
         // 100: Inertial Nav
         //
@@ -363,6 +362,8 @@ public:
         k_param_rpm_sensor,
         k_param_autotune_min_d, // 251
         k_param_DataFlash = 253, // 253 - Logging Group
+
+		k_param_directionfinder,
 
         // 254,255: reserved
 

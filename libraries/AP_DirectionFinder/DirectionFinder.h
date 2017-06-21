@@ -20,7 +20,7 @@
 #include <AP_SerialManager/AP_SerialManager.h>
 
 // Maximum number of direction finder instances available on this platform.
-#define DIRECTIONFINDER_MAX_INSTANCES 2
+#define DIRECTIONFINDER_MAX_INSTANCES 1
 
 class AP_DirectionFinder_Backend;
 

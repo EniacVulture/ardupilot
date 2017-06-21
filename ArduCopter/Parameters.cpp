@@ -883,7 +883,7 @@ const AP_Param::Info Copter::var_info[] = {
 #if DIRECTIONFINDER_ENABLED == ENABLED
 	// @Group: DIRFND
 	// @Path: ../libraries/AP_DirectionFinder/DirectionFinder.cpp
-	GOBJECT(directionfinder,   "DIRFND", DirectionFinder),
+	GOBJECT(directionfinder, "DIRFND_", DirectionFinder),
 #endif
 
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN

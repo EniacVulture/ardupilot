@@ -902,6 +902,9 @@ private:
     bool throw_height_good();
     bool throw_position_good();
 
+    bool track_init(bool ignore_checks);
+    void track_run();
+
     bool rtl_init(bool ignore_checks);
     void rtl_restart_without_terrain();
     void rtl_run();

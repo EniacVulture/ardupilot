@@ -101,16 +101,16 @@ void DirectionFinder::init()
 void DirectionFinder::update()
 {
 	for (uint8_t i=0; i<num_instances; i++) {
-	        if (drivers[i] != nullptr) {
-	            if (_type[i] == DirectionFinder_TYPE_NONE) {
-	                // allow user to disable a DirectionFinder at runtime
-	                state[i].status = DirectionFinder_NotConnected;
-	                continue;
-	            }
-	            drivers[i]->update();
-	            update_pre_arm_check(i);
-	        }
-	    }
+		if (drivers[i] != nullptr) {
+			if (_type[i] == DirectionFinder_TYPE_NONE) {
+				// allow user to disable a DirectionFinder at runtime
+				state[i].status = DirectionFinder_NotConnected;
+				continue;
+			}
+			drivers[i]->update();
+			update_pre_arm_check(i);
+		}
+	}
 }
 
 void DirectionFinder::detect_instance(uint8_t instance)

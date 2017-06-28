@@ -109,6 +109,10 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
             success = guided_nogps_init(ignore_checks);
             break;
 
+        case TRACK:
+        	success = track_init(ignore_checks);
+        	break;
+
         default:
             success = false;
             break;
@@ -244,6 +248,10 @@ void Copter::update_flight_mode()
         case GUIDED_NOGPS:
             guided_nogps_run();
             break;
+
+        case TRACK:
+        	track_run();
+        	break;
 
         default:
             break;
@@ -421,6 +429,9 @@ void Copter::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
     case GUIDED_NOGPS:
         port->print("GUIDED_NOGPS");
         break;
+    case TRACK:
+    	port->print("TRACK");
+    	break;
     default:
         port->printf("Mode(%u)", (unsigned)mode);
         break;

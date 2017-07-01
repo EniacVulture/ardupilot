@@ -11,11 +11,11 @@ class AP_DirectionFinder_UART : public AP_DirectionFinder_Backend
 
 public:
     // constructor
-    AP_DirectionFinder_UART(DirectionFinder &directionFinder, uint8_t instance, DirectionFinder::DirectionFinder_State &_state,
+    AP_DirectionFinder_UART(DirectionFinder &directionfinder, uint8_t instance, DirectionFinder::DirectionFinder_State &_state,
                                    AP_SerialManager &serial_manager);
 
     // static detection function
-    static bool detect(DirectionFinder &ranger, uint8_t instance, AP_SerialManager &serial_manager);
+    static bool detect(DirectionFinder &directionfinder, uint8_t instance, AP_SerialManager &serial_manager);
 
     // update state
     void update(void);

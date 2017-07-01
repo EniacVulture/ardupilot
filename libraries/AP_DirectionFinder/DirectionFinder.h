@@ -36,6 +36,7 @@ public:
 	enum DirectionFinder_Type {
 		DirectionFinder_TYPE_NONE 		=	0,
 		DirectionFinder_TYPE_UART		=	1,
+		DirectionFinder_TYPE_MAVLink	=	2,
 	};
 
 	enum DirectionFinder_Status {
@@ -63,25 +64,55 @@ public:
 	AP_Int8  _pin[DIRECTIONFINDER_MAX_INSTANCES];
     AP_Int8  _address[DIRECTIONFINDER_MAX_INSTANCES];
 
+    uint8_t direction(uint8_t instance) const {
+    	return state[instance].reading.direction;
+    }
+    uint8_t direction(void) const {
+		return direction(primary_instance);
+	}
+
+    uint8_t magnitude(uint8_t instance) const {
+    	return state[instance].reading.magnitude;
+    }
+    uint8_t magnitude(void) const {
+    	return magnitude(primary_instance);
+   	}
+
 	// Return the number of DirectionFinders.
 	uint8_t num_sensors(void) const {
 		return num_instances;
 	}
 
-    // detect and initialise any available rangefinders
+    // detect and initialise any available directionfinder
     void init(void);
 
-    // update state of all rangefinders. Should be called at around
+    // update state of all directionfinders. Should be called at around
     // 10Hz from main loop
     void update(void);
+
+    // Handle an incoming DIRECTIONFINDER_SENSOR message (from a MAVLink enabled directionfinder)
+    void handle_msg(mavlink_message_t *msg);
 
 	// Returns true if pre-arm checks have passed for all DirectionFinders.
 	bool pre_arm_check() const;
 
+    // query status
+    DirectionFinder_Status status(uint8_t instance) const;
+    DirectionFinder_Status status(void) const {
+        return status(primary_instance);
+    }
+
+    // true if sensor is returning data
+    bool has_data(uint8_t instance) const;
+    bool has_data() const {
+        return has_data(primary_instance);
+    }
+
 private:
     DirectionFinder_State state[DIRECTIONFINDER_MAX_INSTANCES];
 	AP_DirectionFinder_Backend *drivers[DIRECTIONFINDER_MAX_INSTANCES];
-	uint8_t num_instances:1;
+	uint8_t primary_instance:3;
+	uint8_t num_instances:3;
 	AP_SerialManager &serial_manager;
 
 	void detect_instance(uint8_t instance);

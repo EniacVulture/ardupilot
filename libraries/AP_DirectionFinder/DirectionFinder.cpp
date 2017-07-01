@@ -15,6 +15,7 @@
 
 #include "DirectionFinder.h"
 #include "AP_DirectionFinder_UART.h"
+#include "AP_DirectionFinder_MAVLink.h"
 #include <AP_BoardConfig/AP_BoardConfig.h>
 
 extern const AP_HAL::HAL &hal;
@@ -24,7 +25,7 @@ const AP_Param::GroupInfo DirectionFinder::var_info[] = {
 	// @Param: 1_TYPE
 	// @DisplayName: DirectionFinder type
 	// @Description: The type of DirectionFinder device that is connected
-	// @Values: 0:None, 1:UART
+	// @Values: 0:None, 1:UART, 2:MAVLink
 	// @User: Standard
 	AP_GROUPINFO("1_TYPE",    0, DirectionFinder, _type[0], 0),
 
@@ -47,7 +48,7 @@ const AP_Param::GroupInfo DirectionFinder::var_info[] = {
     // @Param: 2_TYPE
     // @DisplayName: DirectionFinder type
     // @Description: The type of DirectionFinder device that is connected
-    // @Values: 0:None, 1:UART
+    // @Values: 0:None, 1:UART, 2:MAVLink
     // @User: Standard
     AP_GROUPINFO("2_TYPE",    3, DirectionFinder, _type[1], 0),
 
@@ -71,7 +72,8 @@ const AP_Param::GroupInfo DirectionFinder::var_info[] = {
 };
 
 DirectionFinder::DirectionFinder(AP_SerialManager &_serial_manager) :
-    num_instances(0),
+    primary_instance(0),
+	num_instances(0),
     serial_manager(_serial_manager)
 {
     AP_Param::setup_object_defaults(this, var_info);
@@ -123,7 +125,75 @@ void DirectionFinder::detect_instance(uint8_t instance)
 			drivers[instance] = new AP_DirectionFinder_UART(*this, instance, state[instance], serial_manager);
 		}
 		break;
+	case DirectionFinder_TYPE_MAVLink:
+		if(AP_DirectionFinder_MAVLink::detect(*this, instance)){
+			state[instance].instance = instance;
+			drivers[instance] = new AP_DirectionFinder_MAVLink(*this, instance, state[instance]);
+		}
+		break;
+	case DirectionFinder_TYPE_NONE:
 	default:
 		break;
 	}
+}
+
+void DirectionFinder::handle_msg(mavlink_message_t *msg) {
+  uint8_t i;
+  for (i=0; i<num_instances; i++) {
+      if ((drivers[i] != NULL) && (_type[i] != DirectionFinder_TYPE_NONE)) {
+          drivers[i]->handle_msg(msg);
+      }
+  }
+}
+
+// query status
+DirectionFinder::DirectionFinder_Status DirectionFinder::status(uint8_t instance) const
+{
+    // sanity check instance
+    if (instance >= DIRECTIONFINDER_MAX_INSTANCES) {
+        return DirectionFinder_NotConnected;
+    }
+
+    if (drivers[instance] == NULL || _type[instance] == DirectionFinder_TYPE_NONE) {
+        return DirectionFinder_NotConnected;
+    }
+
+    return state[instance].status;
+}
+
+// true if sensor is returning data
+bool DirectionFinder::has_data(uint8_t instance) const
+{
+    // sanity check instance
+    if (instance >= DIRECTIONFINDER_MAX_INSTANCES) {
+        return DirectionFinder_NotConnected;
+    }
+    return ((state[instance].status != DirectionFinder_NotConnected) && (state[instance].status != DirectionFinder_NoData));
+}
+
+/*
+  returns true if pre-arm checks have passed for all direction finders
+  these checks involve the user lifting or rotating the vehicle so that sensor readings between
+  the min and 2m can be captured
+ */
+bool DirectionFinder::pre_arm_check() const
+{
+    for (uint8_t i=0; i<num_instances; i++) {
+        // if driver is valid but pre_arm_check is false, return false
+        if ((drivers[i] != NULL) && (_type[i] != DirectionFinder_TYPE_NONE) && !state[i].pre_arm_check) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/*
+  set pre-arm checks to passed
+ */
+void DirectionFinder::update_pre_arm_check(uint8_t instance)
+{
+    // return immediately if already passed or no sensor data
+    if (state[instance].pre_arm_check || state[instance].status == DirectionFinder_NotConnected || state[instance].status == DirectionFinder_NoData) {
+        return;
+    }
 }

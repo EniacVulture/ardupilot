@@ -424,6 +424,20 @@ void NOINLINE Copter::send_rangefinder(mavlink_channel_t chan)
 }
 #endif
 
+#if DIRECTIONFINDER_ENABLED == ENABLED
+void NOINLINE Copter::send_directionfinder(mavlink_channel_t chan)
+{
+    // exit immediately if directionfinder is disabled
+    if (!directionfinder.has_data()) {
+        return;
+    }
+    mavlink_msg_directionfinder_send(
+            chan,
+            directionfinder.direction(),
+			directionfinder.magnitude());
+}
+#endif
+
 /*
   send RPM packet
  */
@@ -628,6 +642,12 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
 #endif
         break;
 
+    case MSG_DIRECTIONFINDER:
+#if DIRECTIONFINDER_ENABLED == ENABLED
+    	CHECK_PAYLOAD_SIZE(DIRECTIONFINDER);
+		copter.send_directionfinder(chan);
+#endif
+    	break;
     case MSG_RPM:
         CHECK_PAYLOAD_SIZE(RPM);
         copter.send_rpm(chan);
@@ -933,6 +953,7 @@ GCS_MAVLINK_Copter::data_stream_send(void)
         send_message(MSG_HWSTATUS);
         send_message(MSG_SYSTEM_TIME);
         send_message(MSG_RANGEFINDER);
+        send_message(MSG_DIRECTIONFINDER);
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN
         send_message(MSG_TERRAIN);
 #endif
@@ -1890,6 +1911,13 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
         result = MAV_RESULT_ACCEPTED;
         copter.rangefinder.handle_msg(msg);
         break;
+    }
+
+    case MAVLINK_MSG_ID_DIRECTION_SENSOR:
+    {
+    	result = MAV_RESULT_ACCEPTED;
+    	copter.directionfinder.handle_msg(msg);
+    	break;
     }
 
     case MAVLINK_MSG_ID_GPS_RTCM_DATA:

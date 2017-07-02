@@ -122,7 +122,9 @@ void Copter::track_run()
 			pos_control.set_desired_velocity_xy(0.0f, 0.0f);
 		} else {
 			// update pos control xy velocity based on directionfinder
-			pos_control.set_desired_velocity_xy(0.0f, 0.0f);
+			float vel_x, vel_y;
+			calculate_velocity_xy(directionfinder.direction(), directionfinder.magnitude(), &vel_x, &vel_y);
+			pos_control.set_desired_velocity_xy(vel_x, vel_y);
 		}
 
 		pos_control.set_alt_target(TRACK_ALT_TARGET);
@@ -130,4 +132,11 @@ void Copter::track_run()
 		pos_control.update_xy_controller(AC_PosControl::XY_MODE_POS_AND_VEL_FF, ekfNavVelGainScaler, false);
 		break;
 	}
+}
+
+void calculate_velocity_xy(uint8_t direction, uint8_t magnitude, float *vel_x, float *vel_y)
+{
+	float angle = (360 / 256) * direction;
+	*vel_x = sinf(angle) * magnitude;
+	*vel_y = sqrt((magnitude * magnitude) - (*vel_x * *vel_x));
 }

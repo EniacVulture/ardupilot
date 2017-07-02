@@ -905,6 +905,7 @@ private:
 
     bool track_init(bool ignore_checks);
     void track_run();
+    void calculate_velocity_xy(uint8_t direction, uint8_t magnitude, float *x, float *y);
 
     bool rtl_init(bool ignore_checks);
     void rtl_restart_without_terrain();

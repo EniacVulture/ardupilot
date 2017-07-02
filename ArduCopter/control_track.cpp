@@ -134,7 +134,7 @@ void Copter::track_run()
 	}
 }
 
-void calculate_velocity_xy(uint8_t direction, uint8_t magnitude, float *vel_x, float *vel_y)
+void Copter::calculate_velocity_xy(uint8_t direction, uint8_t magnitude, float *vel_x, float *vel_y)
 {
 	float angle = (360 / 256) * direction;
 	*vel_x = sinf(angle) * magnitude;

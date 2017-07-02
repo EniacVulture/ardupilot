@@ -257,6 +257,14 @@ enum FlipState {
     Flip_Abandon
 };
 
+// Track states
+enum TrackModeState {
+    Track_MotorStopped,
+    Track_Takeoff,
+    Track_Flying,
+    Track_Landed
+};
+
 // Throw stages
 enum ThrowModeStage {
     Throw_Disarmed,
